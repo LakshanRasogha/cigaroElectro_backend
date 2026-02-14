@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 import axios from 'axios'
 
 export function registerUser(req, res) {
-
+    
     const data = req.body
 
     data.password = bcrypt.hashSync(data.password, 10)

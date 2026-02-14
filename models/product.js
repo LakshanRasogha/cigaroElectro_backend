@@ -20,11 +20,21 @@ const variantSchema = new mongoose.Schema({
   availability: {
     type: Boolean,
     default: true
+  },
+  variantImage:{
+        type: [String],
+        required: true,
+        default: ["https://www.sriyanidresspoint.lk/product/womens-classic-hand-bag-050502902013?srsltid=AfmBOopond1VIeIgFSkRe89_tTpUuwitN9lcThhQOMDUb23zjx8Kp7if"]
   }
 });
 
 // Main Product Schema
 const productSchema = new mongoose.Schema({
+  key: {
+    type: String,
+    required: true,
+    unique: true
+  },
   name: { 
     type: String, 
     required: [true, 'Product name is required'], 
@@ -49,6 +59,11 @@ const productSchema = new mongoose.Schema({
   },
   description: {
     type: String
+  },
+  productImage:{
+    type: [String],
+    required: true,
+        default: ["https://www.sriyanidresspoint.lk/product/womens-classic-hand-bag-050502902013?srsltid=AfmBOopond1VIeIgFSkRe89_tTpUuwitN9lcThhQOMDUb23zjx8Kp7if"]
   },
   // Nesting the variants array
   variants: [variantSchema] 

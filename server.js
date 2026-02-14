@@ -54,5 +54,3 @@ app.listen(3000,()=>{
     console.log("Server started on port 3000");
 })
 
-//john.doee@example.com StrongPassword123 user
-//john.doeee@example.com StrongPassword1234 admin
