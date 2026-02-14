@@ -1,8 +1,12 @@
 import mongoose from 'mongoose';
 
-// Schema for individual flavor variants
-// Using subdocuments allows us to validate each flavor and track stock individually.
+
 const variantSchema = new mongoose.Schema({
+  vKey: {
+    type: String,
+    required: true,
+    unique: true
+  },
   flavor: { 
     type: String, 
     required: [true, 'Flavor name is required'],
@@ -30,7 +34,7 @@ const variantSchema = new mongoose.Schema({
 
 // Main Product Schema
 const productSchema = new mongoose.Schema({
-  key: {
+  Key: {
     type: String,
     required: true,
     unique: true
