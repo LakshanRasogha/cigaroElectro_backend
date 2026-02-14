@@ -3,13 +3,13 @@ import { addProduct , getProducts, updateProduct, deleteProduct, getProduct, del
 
 const productRouter = express.Router()
 
-productRouter.post("/", addProduct)
-productRouter.get("/", getProducts)
-productRouter.get("/:key", getProduct)
-productRouter.put("/:key", updateProduct)
-productRouter.delete("/:key", deleteProduct)
-productRouter.delete("/:key/variant", deleteVariant)
-productRouter.get("/:key/variant", getVariant)
+productRouter.post("/add", addProduct)
+productRouter.get("/get", getProducts)
+productRouter.get("/getOne/:key", getProduct)
+productRouter.put("/update/:key", updateProduct)
+productRouter.delete("/delete/:key", deleteProduct)
+productRouter.delete("/deleteVariant/:key", deleteVariant)
+productRouter.get("/getVariant/:key", getVariant)
 
 
 export default productRouter
