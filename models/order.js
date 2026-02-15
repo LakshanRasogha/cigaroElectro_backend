@@ -1,79 +1,78 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
-    orderId:{
-        type: String,
-        required: true,
-        unique: true
-    },
-    email:{
+  orderId: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  orderDate: {
+    type: Date,
+    required: true,
+    default: Date.now
+  },
+  orderedItems: [
+    {
+      productKey: { // Reference to the main product key
         type: String,
         required: true
-    },
-    orderDate:{
-        type: Date,
-        required: true,
-        default: Date.now
-    },
-    orderedItems:{
-        type:[
-            {
-                product: {
-                    key:{
-                        type: String,
-                        required: true
-                    },
-                    name:{
-                        type: String,
-                        required: true
-                    },
-                    image:{
-                        type: String,
-                        required: true
-                    },
-                    basePrice:{
-                        type: Number,
-                        required: true
-                    }
-                },
-                 quantity:{
-                    type: Number,
-                    required: true
-                }
-
-            }
-
-        ],
+      },
+      name: { 
+        type: String,
         required: true
-
-    },
-    days:{
+      },
+      basePrice: {
         type: Number,
         required: true
-    },
-    startingDate:{
-        type: Date,
-        required: true
-    },
-    endingDate:{
-        type: Date,
-        required: true
-    },
-    isApproved:{
-        type: Boolean,
-        required: true,
-        default: false
-    },
-    status:{
-        type:String,
-        required:true,
-        default:"Pending"
-    },
-    totalAmount:{
-        type: Number,
-        required: true
+      },
+      deliveryFee: { 
+        type: Number, 
+        default: 400 
+      },
+      // Snapshot of the specific variant chosen
+      variant: {
+        vKey: {
+          type: String,
+          required: true
+        },
+        flavor: { 
+          type: String, 
+          required: true 
+        },
+        variantImage: {
+          type: [String],
+          required: true
+        },
+        stock: { // Added this as it's essential for orders
+          type: Number,
+          required: true,
+          min: 1,
+          default: 1
+        }
+      }
     }
-})
+  ],
+  isApproved: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  status: {
+    type: String,
+    required: true,
+    default: "Pending" //Pending, Shipped, Delivered, Cancelled
+  },
+  totalAmount: {
+    type: Number,
+    required: true
+  }
+}, {
+  timestamps: true // Useful for tracking when orders were last updated
+});
 
-const Order = mongoose.model('orders', orderSchema)
+const Order = mongoose.model('orders', orderSchema);
 export default Order;

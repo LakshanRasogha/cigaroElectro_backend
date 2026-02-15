@@ -28,8 +28,17 @@ export const getProducts = async (req, res) => {
 //Get a single product by Key (Public)
 export const getProduct = async (req, res) => {
   try {
-    const product = await Product.findOne({ key: req.params.key });
-    if (!product) return res.status(404).json({ message: "Product not found" });
+    const { key } = req.params;
+
+    // Use $regex with 'i' flag for case-insensitive matching
+    const product = await Product.findOne({ 
+      key: { $regex: new RegExp(`^${key}$`, 'i') } 
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: `Product with key '${key}' not found` });
+    }
+
     res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
