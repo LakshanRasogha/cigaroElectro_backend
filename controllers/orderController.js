@@ -26,7 +26,7 @@ export async function createOrder(req, res){
         const lastOrderNumber = parseInt(lastOrderNumberInString) //65
         const currentOrderNumber = lastOrderNumber + 1 //66
         const formattedNumber = String(currentOrderNumber).padStart(4, '0') //"0066"
-        orderInfo.orderId = "ORD" + formattedNumber //"ORD0066"
+        orderInfo.orderId = "ORD" + formattedNumber //"ORD00"
     }
 
     let oneDayCost = 0
@@ -186,4 +186,4 @@ export async function approveOrRejectOrder(req,res){
     }else{
         res.status(403).json({error:"Unauthorized"})
     }
-}
+}//eger
