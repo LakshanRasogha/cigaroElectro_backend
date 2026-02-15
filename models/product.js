@@ -4,8 +4,7 @@ import mongoose from 'mongoose';
 const variantSchema = new mongoose.Schema({
   vKey: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   flavor: { 
     type: String, 
@@ -34,7 +33,7 @@ const variantSchema = new mongoose.Schema({
 
 // Main Product Schema
 const productSchema = new mongoose.Schema({
-  Key: {
+  key: {
     type: String,
     required: true,
     unique: true
