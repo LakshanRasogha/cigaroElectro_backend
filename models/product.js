@@ -58,7 +58,9 @@ const productSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    default: 'Disposable'
+    default: 'Disposable',
+    enum: ['Disposable', 'Re-fill', 'E-Liquid', 'Accessories', 'T-shirts']
+
   },
   description: {
     type: String
@@ -66,7 +68,7 @@ const productSchema = new mongoose.Schema({
   productImage:{
     type: [String],
     required: true,
-        default: ["https://www.sriyanidresspoint.lk/product/womens-classic-hand-bag-050502902013?srsltid=AfmBOopond1VIeIgFSkRe89_tTpUuwitN9lcThhQOMDUb23zjx8Kp7if"]
+    default: ["https://www.sriyanidresspoint.lk/product/womens-classic-hand-bag-050502902013?srsltid=AfmBOopond1VIeIgFSkRe89_tTpUuwitN9lcThhQOMDUb23zjx8Kp7if"]
   },
   // Nesting the variants array
   variants: [variantSchema] 

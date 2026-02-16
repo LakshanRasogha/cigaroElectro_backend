@@ -10,6 +10,12 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  shippingAddress: {
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    postalCode: { type: String },
+    phone: { type: String, required: true }
+  },
   orderDate: {
     type: Date,
     required: true,
@@ -63,7 +69,8 @@ const orderSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    default: "Pending" //Pending, Shipped, Delivered, Cancelled
+    default: "Pending",
+    enum: ["Pending", "Approved", "Cancelled"] 
   },
   totalAmount: {
     type: Number,
