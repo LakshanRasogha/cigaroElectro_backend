@@ -10,6 +10,12 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  shippingAddress: {
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    postalCode: { type: String },
+    phone: { type: String, required: true }
+  },
   orderDate: {
     type: Date,
     required: true,
@@ -35,24 +41,23 @@ const orderSchema = new mongoose.Schema({
       },
       // Snapshot of the specific variant chosen
       variant: {
-        vKey: {
-          type: String,
-          required: true
-        },
-        flavor: { 
-          type: String, 
-          required: true 
-        },
-        variantImage: {
-          type: [String],
-          required: true
-        },
-        stock: { // Added this as it's essential for orders
-          type: Number,
-          required: true,
-          min: 1,
-          default: 1
-        }
+            vKey: {
+                type: String,
+                required: true
+            },
+                flavor: { 
+                type: String, 
+                required: true 
+            },
+                variantImage: {
+                type: [String],
+                required: true
+            },
+                qty: { 
+                type: Number,
+                required: true, 
+                min: 1 
+            }
       }
     }
   ],
@@ -64,7 +69,8 @@ const orderSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    default: "Pending" //Pending, Shipped, Delivered, Cancelled
+    default: "Pending",
+    enum: ["Pending", "Approved", "Cancelled"] 
   },
   totalAmount: {
     type: Number,
