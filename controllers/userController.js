@@ -47,7 +47,10 @@ export function loginUser(req, res) {
                     phone: user.phone
                 }, process.env.JWT_SECRET)
 
-                res.json({message: "login successful", token: token, user:user})
+                const userObject = user.toObject();
+                const { password, ...userWithoutPassword } = userObject;
+
+                res.json({message: "login successful", token: token, user: userWithoutPassword})
            
             }else{
                 res.status(401).json({error: "invalid password"})
