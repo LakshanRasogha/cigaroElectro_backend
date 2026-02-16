@@ -1,8 +1,11 @@
 import mongoose from 'mongoose';
 
-// Schema for individual flavor variants
-// Using subdocuments allows us to validate each flavor and track stock individually.
+
 const variantSchema = new mongoose.Schema({
+  vKey: {
+    type: String,
+    required: true
+  },
   flavor: { 
     type: String, 
     required: [true, 'Flavor name is required'],
@@ -20,11 +23,21 @@ const variantSchema = new mongoose.Schema({
   availability: {
     type: Boolean,
     default: true
+  },
+  variantImage:{
+        type: [String],
+        required: true,
+        default: ["https://www.sriyanidresspoint.lk/product/womens-classic-hand-bag-050502902013?srsltid=AfmBOopond1VIeIgFSkRe89_tTpUuwitN9lcThhQOMDUb23zjx8Kp7if"]
   }
 });
 
 // Main Product Schema
 const productSchema = new mongoose.Schema({
+  key: {
+    type: String,
+    required: true,
+    unique: true
+  },
   name: { 
     type: String, 
     required: [true, 'Product name is required'], 
@@ -45,10 +58,17 @@ const productSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    default: 'Disposable'
+    default: 'Disposable',
+    enum: ['Disposable', 'Re-fill', 'E-Liquid', 'Accessories', 'T-shirts']
+
   },
   description: {
     type: String
+  },
+  productImage:{
+    type: [String],
+    required: true,
+    default: ["https://www.sriyanidresspoint.lk/product/womens-classic-hand-bag-050502902013?srsltid=AfmBOopond1VIeIgFSkRe89_tTpUuwitN9lcThhQOMDUb23zjx8Kp7if"]
   },
   // Nesting the variants array
   variants: [variantSchema] 

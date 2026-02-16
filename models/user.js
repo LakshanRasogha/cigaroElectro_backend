@@ -29,8 +29,9 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     address: {
-        type: String,
-        required: true
+        address: { type: String, required: true },
+        city: { type: String, required: true },
+        postalCode: { type: String },
     },
     phone: {
         type: String,
@@ -40,6 +41,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null
     }
+}, {
+  timestamps: true 
 })
 
 const User = mongoose.model('users', userSchema)

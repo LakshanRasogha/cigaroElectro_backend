@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 //import reviewRouter from './routes/reviewRouter.js'
 import cors from 'cors'
+import orderRouter from './routes/orderRouter.js'
 //import orderRouter from './routes/orderRouter.js'
 
 dotenv.config() // Load environment variables from .env file
@@ -48,11 +49,10 @@ connection.once('open', ()=>{
 
 app.use('/api/users', userRouter)
 app.use('/api/products', productRouter)
+app.use('/api/orders', orderRouter)
 
 
 app.listen(3001,()=>{
     console.log("Server started on port 3001");
 })
 
-//john.doee@example.com StrongPassword123 user
-//john.doeee@example.com StrongPassword1234 admin
