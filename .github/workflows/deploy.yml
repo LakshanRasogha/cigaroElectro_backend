@@ -1,0 +1,18 @@
+- name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }} # This is now 'deploy'
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Navigate to the project folder
+            cd ~/cigaroElectro_backend
+            
+            # Pull latest code
+            git pull origin main
+            
+            # Build and Run (No sudo needed because we added deploy to docker group)
+            docker build -t my-backend .
+            docker stop backend-container || true
+            docker rm backend-container || true
+            docker run -d -p 80:3000 --name backend-container --restart always my-backend
