@@ -1,58 +1,56 @@
-import express from 'express'
-import bodyParser from 'body-parser'
-import mongoose from 'mongoose'
-import userRouter from './routes/userRouter.js'
-import productRouter from './routes/productRouter.js'
-//import inquiryRouter from './routes/inquiryRouter.js'
-import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv'
-//import reviewRouter from './routes/reviewRouter.js'
-import cors from 'cors'
-import orderRouter from './routes/orderRouter.js'
-//import orderRouter from './routes/orderRouter.js'
+import express from "express";
+import bodyParser from "body-parser";
+import mongoose from "mongoose";
+import userRouter from "./routes/userRouter.js";
+import productRouter from "./routes/productRouter.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import cors from "cors";
+import orderRouter from "./routes/orderRouter.js";
 
-dotenv.config() // Load environment variables from .env file
+dotenv.config();
 
-let app = express()
+let app = express();
 
-app.use(cors())
+// --- UPDATED CORS CONFIGURATION ---
+// This allows your Vercel frontend to talk to your VPS backend
+app.use(
+  cors({
+    origin: "*", // For testing with Quick Tunnels, '*' is easiest.
+    // Later, change '*' to 'https://your-app.vercel.app' for better security.
+    credentials: true,
+  }),
+);
 
-app.use(bodyParser.json()) 
-app.use((req,res,next)=>{
-    
-    let token = req.header("Authorization")
-    
-    //remove "bearer "
-    if(token != null){
-        token = token.replace("Bearer ","")
+app.use(bodyParser.json());
 
-        jwt.verify(token,process.env.JWT_SECRET,
-        (err,decoded)=>{
-            if(!err){
-                console.log("Decoded JWT:", decoded)
-                req.user = decoded
-            }
-        })
-    }next()
-})
+app.use((req, res, next) => {
+  let token = req.header("Authorization");
+  if (token != null) {
+    token = token.replace("Bearer ", "");
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (!err) {
+        req.user = decoded;
+      }
+    });
+  }
+  next();
+});
 
+let mongoUrl = process.env.MONGO_URL;
 
-let mongoUrl = process.env.MONGO_URL
+// Added error handling for MongoDB to help you debug on the VPS
+mongoose
+  .connect(mongoUrl)
+  .then(() => console.log("MongoDB connection established"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-mongoose.connect(mongoUrl)
+app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);
+app.use("/api/orders", orderRouter);
 
-let connection = mongoose.connection
-
-connection.once('open', ()=>{
-    console.log("MongoDB database connection established successfully")
-})
-
-app.use('/api/users', userRouter)
-app.use('/api/products', productRouter)
-app.use('/api/orders', orderRouter)
-
-
-app.listen(3001,()=>{
-    console.log("Server started on port 3001");
-})
-
+// Use port from .env or default to 3001
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
