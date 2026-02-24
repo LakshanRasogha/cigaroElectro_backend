@@ -49,6 +49,6 @@ app.use("/api/users", userRouter);
 app.use("/api/products", productRouter);
 app.use("/api/orders", orderRouter);
 
-app.listen(3001, () => {
-  console.log("Server started on port 3001");
+app.listen(3005, () => {
+  console.log("Server started on port 3005");
 });
