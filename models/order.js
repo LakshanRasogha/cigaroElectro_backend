@@ -82,7 +82,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
       default: "Pending",
-      enum: ["Pending", "Approved", "Cancelled"],
+      enum: ["Pending", "Approved", "Cancelled", "Rejected"],
     },
     totalAmount: {
       type: Number,
