@@ -14,14 +14,13 @@ export async function createOrder(req, res) {
         .json({ message: "Please log in to place an order" });
     }
 
-    // 2. Fetch User for Default fallback
+    // 2. Fetch User for Profile Data (Name & Default Address)
     const userProfile = await User.findOne({ email: req.user.email });
     if (!userProfile) {
       return res.status(404).json({ message: "User profile not found" });
     }
 
     // 3. Logic: Manual Input OR Default Fallback
-    // If frontend sends an address, use it. Otherwise, use userProfile defaults.
     const finalShippingAddress = {
       address: data.shippingAddress?.address || userProfile.address.address,
       city: data.shippingAddress?.city || userProfile.address.city,
@@ -40,6 +39,10 @@ export async function createOrder(req, res) {
     const orderInfo = {
       orderId: "", // Will be set in step 4
       email: req.user.email,
+      // --- NEW: Add User Name to Order Snapshot ---
+      firstName: userProfile.firstName,
+      lastName: userProfile.lastName,
+      // -------------------------------------------
       orderedItems: [],
       totalAmount: 0,
       shippingAddress: finalShippingAddress,
@@ -104,6 +107,7 @@ export async function createOrder(req, res) {
       order: savedOrder,
     });
   } catch (error) {
+    console.error("Create Order Error:", error);
     res.status(500).json({ message: error.message });
   }
 }
