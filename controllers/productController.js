@@ -1,5 +1,5 @@
-import Product from '../models/product.js'
-import { isItAdmin } from "./userController.js"
+import Product from "../models/product.js";
+import { isItAdmin } from "./userController.js";
 //Add a new product (Admin Only)
 export const addProduct = async (req, res) => {
   try {
@@ -9,7 +9,9 @@ export const addProduct = async (req, res) => {
 
     const newProduct = new Product(req.body);
     await newProduct.save();
-    res.status(201).json({ message: "Product added successfully", data: newProduct });
+    res
+      .status(201)
+      .json({ message: "Product added successfully", data: newProduct });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -31,12 +33,14 @@ export const getProduct = async (req, res) => {
     const { key } = req.params;
 
     // Use $regex with 'i' flag for case-insensitive matching
-    const product = await Product.findOne({ 
-      key: { $regex: new RegExp(`^${key}$`, 'i') } 
+    const product = await Product.findOne({
+      key: { $regex: new RegExp(`^${key}$`, "i") },
     });
 
     if (!product) {
-      return res.status(404).json({ message: `Product with key '${key}' not found` });
+      return res
+        .status(404)
+        .json({ message: `Product with key '${key}' not found` });
     }
 
     res.status(200).json(product);
@@ -51,21 +55,20 @@ export const updateProduct = async (req, res) => {
     // if (!isItAdmin(req)) {
     //   return res.status(403).json({ message: "Unauthorized" });
     // }
-    
+
     const updatedProduct = await Product.findOneAndUpdate(
       { key: req.params.key },
       req.body,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
-    if (!updatedProduct) return res.status(404).json({ message: "Product not found" });
+    if (!updatedProduct)
+      return res.status(404).json({ message: "Product not found" });
     res.status(200).json({ message: "Product updated", data: updatedProduct });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
-
-
 
 //Delete product by Key (Admin Only)
 export const deleteProduct = async (req, res) => {
@@ -74,27 +77,29 @@ export const deleteProduct = async (req, res) => {
     //   return res.status(403).json({ message: "Unauthorized" });
     // }
 
-    const deletedProduct = await Product.findOneAndDelete({ key: req.params.key });
-    if (!deletedProduct) return res.status(404).json({ message: "Product not found" });
+    const deletedProduct = await Product.findOneAndDelete({
+      key: req.params.key,
+    });
+    if (!deletedProduct)
+      return res.status(404).json({ message: "Product not found" });
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-
 export const getVariantByKey = async (req, res) => {
   try {
     const { key, vKey } = req.params; // Expecting both in the route
 
     const product = await Product.findOne(
-      { 
-        Key: key,            // Match the product
-        "variants.vKey": vKey // Match the specific variant inside the array
+      {
+        Key: key, // Match the product
+        "variants.vKey": vKey, // Match the specific variant inside the array
       },
-      { 
-        "variants.$": 1      // Projection: Return ONLY the first matched variant element
-      }
+      {
+        "variants.$": 1, // Projection: Return ONLY the first matched variant element
+      },
     );
 
     if (!product || !product.variants.length) {
@@ -102,7 +107,7 @@ export const getVariantByKey = async (req, res) => {
     }
 
     // Return the specific variant object directly
-    res.status(200).json(product.variants[0]); 
+    res.status(200).json(product.variants[0]);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -111,40 +116,44 @@ export const getVariantByKey = async (req, res) => {
 export const updateVariantByKey = async (req, res) => {
   try {
     if (!isItAdmin(req)) {
-      return res.status(403).json({ message: "Unauthorized: Admin access required" });
+      return res
+        .status(403)
+        .json({ message: "Unauthorized: Admin access required" });
     }
 
     // Identifiers come strictly from the URL params
-    const { key, vKey } = req.params; 
+    const { key, vKey } = req.params;
     // New data comes from the request body
-    const updateData = req.body; 
+    const updateData = req.body;
 
     const updatedProduct = await Product.findOneAndUpdate(
-      { 
-        Key: key,            // Match the parent Product
-        "variants.vKey": vKey // Match the specific Variant
+      {
+        Key: key, // Match the parent Product
+        "variants.vKey": vKey, // Match the specific Variant
       },
-      { 
-        $set: { 
+      {
+        $set: {
           // Update only the fields provided in the body
           "variants.$.vKey": updateData.vKey || vKey,
           "variants.$.flavor": updateData.flavor,
           "variants.$.emoji": updateData.emoji,
           "variants.$.stock": updateData.stock,
           "variants.$.availability": updateData.availability,
-          "variants.$.variantImage": updateData.variantImage
-        } 
+          "variants.$.variantImage": updateData.variantImage,
+        },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!updatedProduct) {
-      return res.status(404).json({ message: "Product or specific Variant not found" });
+      return res
+        .status(404)
+        .json({ message: "Product or specific Variant not found" });
     }
 
-    res.status(200).json({ 
-      message: "Variant updated successfully", 
-      data: updatedProduct 
+    res.status(200).json({
+      message: "Variant updated successfully",
+      data: updatedProduct,
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -159,25 +168,25 @@ export const deleteVariantByKey = async (req, res) => {
     // }
 
     // Capture keys from URL parameters
-    const { key, vKey } = req.params; 
+    const { key, vKey } = req.params;
 
     const updatedProduct = await Product.findOneAndUpdate(
       { Key: key }, // Find the product by its Key
-      { 
-        $pull: { 
-          variants: { vKey: vKey } // Remove the variant that matches this vKey
-        } 
+      {
+        $pull: {
+          variants: { vKey: vKey }, // Remove the variant that matches this vKey
+        },
       },
-      { new: true } // Return the updated product after deletion
+      { new: true }, // Return the updated product after deletion
     );
 
     if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: "Variant deleted successfully",
-      data: updatedProduct 
+      data: updatedProduct,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
