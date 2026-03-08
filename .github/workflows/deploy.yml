@@ -1,18 +1,27 @@
-- name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+name: Deploy Backend to VPS
+
+on:
+  push:
+    branches:
+      - main  # Change this to 'master' if your main branch is called master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }} # This is now 'deploy'
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            # Navigate to the project folder
-            cd ~/cigaroElectro_backend
+            # 1. Navigate to your backend directory
+            cd /app/backend/cigaroElectro_backend
             
-            # Pull latest code
+            # 2. Pull the latest code from GitHub
             git pull origin main
             
-            # Build and Run (No sudo needed because we added deploy to docker group)
-            docker build -t my-backend .
-            docker stop backend-container || true
-            docker rm backend-container || true
-            docker run -d -p 80:3000 --name backend-container --restart always my-backend
+            # 3. Rebuild and restart the Docker containers in the background
+            docker compose up -d --build
