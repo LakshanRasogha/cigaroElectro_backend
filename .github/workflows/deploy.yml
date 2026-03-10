@@ -1,50 +1,32 @@
-name: Deploy Backend to VPS
-
-on:
-  push:
-    branches:
-      - main 
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Deploy via Native SSH
+- name: Deploy via Native SSH
         env:
           PRIVATE_KEY: ${{ secrets.VPS_SSH_KEY }}
           HOST: ${{ secrets.VPS_HOST }}
           USERNAME: ${{ secrets.VPS_USERNAME }}
           MONGO_URL: ${{ secrets.MONGO_URL }}
         run: |
-          # 1. Setup the private key safely and scrub Windows formatting
+          # 1. Setup the private key safely
           mkdir -p ~/.ssh
-          echo "$PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          
+          # Use a heredoc to write the key exactly as it is in the secret, 
+          # preserving all newlines perfectly.
+          cat << 'KEY_EOF' > ~/.ssh/id_ed25519
+          ${PRIVATE_KEY}
+          KEY_EOF
+          
+          # Remove any potential Windows carriage returns just in case
+          sed -i 's/\r$//' ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           
           # 2. Prevent the "Host verification failed" error
-          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+          # ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
 
-          # 3. Run your commands on the VPS
-          # We pass the MONGO_URL variable into the SSH session
+          # 3. Run commands on the VPS
           ssh -i ~/.ssh/id_ed25519 "$USERNAME@$HOST" MONGO_URL="$MONGO_URL" bash -s << 'EOF'
-          cd /app/backend/cigaroElectro_backend
-          
-          # Pull latest code
+            cd /app/backend/cigaroElectro_backend
             git pull origin main
-
-            # --- AUTOMATIC .ENV GENERATION ---
-            # Overwrite .env with fresh secrets
             echo "MONGO_URL=$MONGO_URL" > .env
             echo "PORT=3005" >> .env
-            
-            # Rebuild and restart services
-            # --remove-orphans ensures old services are cleaned up
             docker compose up -d --build --remove-orphans
-
-            # Clean up dangling images to save disk space on VPS
             docker image prune -f
           EOF
